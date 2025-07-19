@@ -1,3 +1,11 @@
+import dotenv from 'dotenv';
+import allure from '@wdio/allure-reporter';
+import logger from './test/helper/logger';
+import fs from 'fs';
+dotenv.config();
+let headless = process.env.HEADLESS === 'true' ? true : false;
+let debug = process.env.DEBUG === 'true' ? true : false;
+
 export const config: WebdriverIO.Config = {
     //
     // ====================
@@ -53,7 +61,23 @@ export const config: WebdriverIO.Config = {
     // https://saucelabs.com/platform/platform-configurator
     //
     capabilities: [{
-        browserName: 'chrome'
+        browserName: 'chrome',
+        'goog:chromeOptions': {
+            args: [
+                '--disable-infobars',
+                '--disable-dev-shm-usage',
+                '--no-sandbox',
+                '--window-size=1920,1080',
+                ...(headless ? ['--headless'] : []),
+                ...(debug ? ['--remote-debugging-port=9222'] : [])
+            ]
+        },
+        acceptInsecureCerts: true,
+        timeouts:{
+            implicit: 10000, // 10 seconds
+            pageLoad: 60000, // 60 seconds
+            script: 30000 // 30 seconds
+        }
     }],
 
     //
@@ -63,7 +87,7 @@ export const config: WebdriverIO.Config = {
     // Define all options that are relevant for the WebdriverIO instance here
     //
     // Level of logging verbosity: trace | debug | info | warn | error | silent
-    logLevel: 'info',
+    logLevel: debug ? 'debug' : 'info',
     //
     // Set specific log levels per logger
     // loggers:
@@ -127,7 +151,10 @@ export const config: WebdriverIO.Config = {
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
     reporters: ['spec',['allure', {
-        outputDir: 'allure-results'}]],
+        outputDir: 'allure-results',
+        disableWebdriverStepsReporting: true,
+        useCucumberStepReporter: true
+    }]],
 
     // If you are using Cucumber you need to specify the location of your step definitions.
     cucumberOpts: {
@@ -150,7 +177,7 @@ export const config: WebdriverIO.Config = {
         // <boolean> fail if there are any undefined or pending steps
         strict: false,
         // <string> (expression) only execute the features or scenarios with tags matching the expression
-        tagExpression: '@demo',
+        tagExpression: '@inventory',
         // <number> timeout for step definitions
         timeout: 60000,
         // <boolean> Enable this config to treat undefined definitions as warnings.
@@ -171,8 +198,12 @@ export const config: WebdriverIO.Config = {
      * @param {object} config wdio configuration object
      * @param {Array.<Object>} capabilities list of capabilities details
      */
-    // onPrepare: function (config, capabilities) {
-    // },
+    onPrepare: function (config, capabilities) {
+        if(process.env.Runner === 'local' && fs.existsSync('./allure-results')) {
+            fs.rmdirSync('./allure-results', { recursive: true });
+            console.log('Cleared previous allure-results directory');
+        }
+    },
     /**
      * Gets executed before a worker process is spawned and can be used to initialize specific service
      * for that worker as well as modify runtime environments in an async fashion.
@@ -258,6 +289,12 @@ export const config: WebdriverIO.Config = {
      */
     // afterStep: function (step, scenario, result, context) {
     // },
+    afterStep: async function (step, scenario, result, context) {
+        if(!result.passed) {
+            await browser.takeScreenshot(); // Take a screenshot if the step failed
+            // Log the error message to the logger
+            logger.error(`${scenario.name} - Step: ${step.text} failed with error: ${result.error}`);
+        }},
     /**
      *
      * Runs after a Cucumber Scenario.
@@ -276,8 +313,10 @@ export const config: WebdriverIO.Config = {
      * @param {string}                   uri      path to feature file
      * @param {GherkinDocument.IFeature} feature  Cucumber feature object
      */
-    // afterFeature: function (uri, feature) {
-    // },
+    afterFeature: async function (uri, feature) {
+        browser.deleteSession(); // Ensure the browser session is closed after the feature
+        allure.addFeature(feature.name);
+    },
     
     /**
      * Runs after a WebdriverIO command gets executed

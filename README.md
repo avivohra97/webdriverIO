@@ -45,8 +45,12 @@ make selections and then  check package.json and setup type:module if not alread
 # install @wdio/globals
 ` npm i @wdio/globals --save-dev --legacy-peer-deps`
 
+
+# reporter
 - allure generate allure-results --clean
 - allure open
+- set the flags disableWebdriverStepsReporting: true and useCucumberStepReporter: true
+- allure serve
 
 # setup a logger
 npm i winston --save-dev
@@ -61,6 +65,42 @@ out put in file combined.log
 
 in logs it will look like
 `[0-0] info: Page opened successfully {"service":"user-service"}`
+
+# exception
+an excepion occurs when normal flow is interruptrd
+- type of exception can be syntax, type or custom
+- chai assertion failure
+Main causes are-
+- error prone code
+- application bug
+
+- can be caught in try catch
+
+# chai
+## The requested module 'chai' does not provide an export named 'default'
+The Problem:
+
+ES Modules ("type": "module"): When you have "type": "module" in your package.json, your JavaScript files are treated as ES modules, which have stricter rules for import and export.
+
+Chai's Export Structure: The chai library typically provides its assertion styles (like expect, assert, should) as properties on a main object or as named exports, but not as a default export.
+
+import chai from 'chai'; // Incorrect: No default export
+or even if you're trying to get expect from it directly:
+
+JavaScript
+
+import { expect } from 'chai'; // Correct for named export
+
+# on prepare
+onPrepare: function (config, capabilities) {
+        if(process.env.Runner === 'local' && fs.existsSync('./allure-results')) {
+            fs.rmdirSync('./allure-results', { recursive: true });
+            console.log('Cleared previous allure-results directory');
+        }
+    },
+
+
+
 
 
 
