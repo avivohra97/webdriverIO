@@ -48,6 +48,22 @@ make selections and then  check package.json and setup type:module if not alread
 - allure generate allure-results --clean
 - allure open
 
+# setup a logger
+npm i winston --save-dev
+create a logger file under /helper folder
+set log level in process.env as 'debug'
+import logger in different files and use it
+
+out put in file combined.log
+{"level":"info","message":"Page opened successfully","service":"user-service"}
+{"level":"info","message":"Radio button clicked successfully","service":"user-service"}
+{"level":"info","message":"Option selected successfully","service":"user-service"}`
+
+in logs it will look like
+`[0-0] info: Page opened successfully {"service":"user-service"}`
+
+
+
 
 
 
