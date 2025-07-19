@@ -203,6 +203,10 @@ export const config: WebdriverIO.Config = {
             fs.rmdirSync('./allure-results', { recursive: true });
             console.log('Cleared previous allure-results directory');
         }
+        if(process.env.Runner === 'local' && fs.existsSync('./combined.log')) {
+            fs.rmSync('./combined.log', { recursive: true });
+            console.log('Cleared previous combined log file');
+        }
     },
     /**
      * Gets executed before a worker process is spawned and can be used to initialize specific service
