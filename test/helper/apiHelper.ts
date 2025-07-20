@@ -1,13 +1,13 @@
 import request from "supertest"
 import reporter from "../helper/reporter"
 
-async function GET( baseURL: string, endpoint: string, authToken: string, queryParam: object,) {
+async function GET( baseURL: string, endpoint: string, queryParam: object,) {
     if (!baseURL || !endpoint) {
         throw Error(`One of the given values baseURL: ${baseURL}, endpoint: ${endpoint} is not valid `)
     }
     baseURL = baseURL.trim()
     endpoint = endpoint.trim()
-    reporter.addStep("info", `Making a GET to ${baseURL}/${endpoint}: ${JSON.stringify(queryParam)}`)
+    await reporter.addStep("info", `Making a GET to ${baseURL}/${endpoint}: ${JSON.stringify(queryParam)}`)
     try {
         return await request(baseURL)
             .get(endpoint)

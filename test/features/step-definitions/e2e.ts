@@ -34,10 +34,10 @@ Given(/^Get list of (.*) from reqres.in$/, async function (endpointRef) {
             throw Error(`Invalid endpoint reference provided: ${endpointRef}`);
         // Make get call by using API helper
 
-        await browser.call(async () => {
+        // await browser.call(async () => {
             // @ts-ignore
-            res = await apiHelper.GET(browser.options.reqresBaseUrl, endpoint, "", constants.REQRES.QUERY_PARAM)
-        });
+            res = await apiHelper.GET(browser.options.reqresBaseUrl, endpoint, constants.REQRES.QUERY_PARAM)
+        // });
         if (res.status != 200) expect.fail(`Failed to get list of users from reqres.in: ${res.status} - ${res.statusText} from endpoint: ${endpoint}`);
         reporter.addStep("info", `Successfully got list of users from reqres.in: ${JSON.stringify(res.body)}`, true);
         // Store results

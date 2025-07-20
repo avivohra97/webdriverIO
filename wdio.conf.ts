@@ -16,6 +16,9 @@ export const config: Options.Testrunner = {
     // WebdriverIO supports running e2e tests as well as unit and component tests.
     runner: 'local',
     tsConfigPath: './tsconfig.json',
+    reqresBaseUrl: 'https://reqres.in',
+    commerceBaseUrl: 'https://admin-demo.nopcommerce.com/login',
+    commerceCustomerUrl: 'https://admin-demo.nopcommerce.com',
     
     //
     // ==================
