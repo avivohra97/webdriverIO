@@ -99,6 +99,13 @@ onPrepare: function (config, capabilities) {
         }
     },
 
+# create and manage different env config
+
+- create different env files
+- merge with wdio conf file using Object.assign
+- update pacakage json file with new confi path
+- Access the property with browser.config<key> update and run test
+
 
 
 

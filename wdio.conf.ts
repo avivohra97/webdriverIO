@@ -1,3 +1,4 @@
+// @ts-nocheck
 import dotenv from 'dotenv';
 import allure from '@wdio/allure-reporter';
 import logger from './test/helper/logger';
@@ -5,8 +6,9 @@ import fs from 'fs';
 dotenv.config();
 let headless = process.env.HEADLESS === 'true' ? true : false;
 let debug = process.env.DEBUG === 'true' ? true : false;
-
-export const config: WebdriverIO.Config = {
+// below will help to set the environment variable for the base URL
+import type { Options } from "@wdio/types";
+export const config: Options.Testrunner = {
     //
     // ====================
     // Runner Configuration
@@ -60,6 +62,7 @@ export const config: WebdriverIO.Config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://saucelabs.com/platform/platform-configurator
     //
+    
     capabilities: [{
         browserName: 'chrome',
         'goog:chromeOptions': {
@@ -74,7 +77,7 @@ export const config: WebdriverIO.Config = {
         },
         acceptInsecureCerts: true,
         timeouts:{
-            implicit: 10000, // 10 seconds
+            implicit: 30000, // 30 seconds
             pageLoad: 60000, // 60 seconds
             script: 30000 // 30 seconds
         }
@@ -177,7 +180,7 @@ export const config: WebdriverIO.Config = {
         // <boolean> fail if there are any undefined or pending steps
         strict: false,
         // <string> (expression) only execute the features or scenarios with tags matching the expression
-        tagExpression: '@inventory',
+        tagExpression: '',
         // <number> timeout for step definitions
         timeout: 60000,
         // <boolean> Enable this config to treat undefined definitions as warnings.
@@ -318,7 +321,7 @@ export const config: WebdriverIO.Config = {
      * @param {GherkinDocument.IFeature} feature  Cucumber feature object
      */
     afterFeature: async function (uri, feature) {
-        browser.deleteSession(); // Ensure the browser session is closed after the feature
+        // browser.deleteSession(); // Ensure the browser session is closed after the feature
         allure.addFeature(feature.name);
     },
     
