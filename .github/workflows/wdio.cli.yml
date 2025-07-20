@@ -28,4 +28,4 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Running smoke tests
-        run: npm run test:smoke
+        run: npm run wdio
