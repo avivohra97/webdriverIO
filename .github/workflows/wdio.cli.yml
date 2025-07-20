@@ -26,6 +26,6 @@ jobs:
         with:
           node-version: 22.x
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
       - name: Running smoke tests
         run: npm run wdio
